@@ -1,34 +1,29 @@
 import React, { useEffect, useState } from 'react'
-import ReactMde from 'react-mde'
-import * as Showdown from "showdown";
-import "react-mde/lib/styles/css/react-mde-all.css";
 import { ref, set } from 'firebase/database';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { v4 as uuidv4 } from 'uuid';
 import { database } from './firebaseConfig';
 
 const NewBlogEdit = ({ setBlogs }) => {
     const [value, setValue] = useState("Blog Content here");
-    const [selectedTab, setSelectedTab] = useState("write");
     const [newBlog, setNewBlog] = useState({})
     const [showBlogEdit, setShowBlogEdit] = useState(false)
-    const blogArr = ['Title', 'Date','Para', 'Image', 'Time']
+    const blogArr = ['Title', 'Date', 'Para', 'Image', 'Time']
 
-    const converter = new Showdown.Converter({
-        strikethrough: true,
-    })
 
     const updateContent = (value, label) => {
-        setNewBlog(prev => ({...prev, [label]: value}))
+        setNewBlog(prev => ({ ...prev, [label]: value }))
     }
 
 
     useEffect(() => {
-        setNewBlog(prev => ({...prev, content: converter.makeHtml(value)}))
+        setNewBlog(prev => ({ ...prev, content: value }))
     }, [value])
 
 
     const handleAddBlog = () => {
-        const blogWithId = {...newBlog, id: uuidv4()}
+        const blogWithId = { ...newBlog, id: uuidv4() }
         setBlogs((prev) => {
             let updatedBlogs;
             if (!prev) {
@@ -40,8 +35,9 @@ const NewBlogEdit = ({ setBlogs }) => {
             alert('New Blog Added')
             return updatedBlogs;
         });
-        
+
     }
+    
 
     return (
         <>
@@ -50,7 +46,7 @@ const NewBlogEdit = ({ setBlogs }) => {
                 <>
                     <div onClick={() => setShowBlogEdit(false)} className='fixed z-30 bg-black h-full w-full left-0 top-0 opacity-40'></div>
                     <section className='w-full h-full'>
-                        <div className='w-[95%] max-h-[90%] overflow-y-scroll remove-scroll bg-white absolute z-50 top-0 left-0 translate-x-10 translate-y-5'>
+                        <div className='w-[95%] max-h-[90%] p-4 overflow-y-scroll remove-scroll bg-white absolute z-50 top-0 left-0 translate-x-10 translate-y-5'>
 
 
                             <div className='flex w-full ml-6 mb-6 gap-x-8 flex-wrap'>
@@ -67,13 +63,29 @@ const NewBlogEdit = ({ setBlogs }) => {
                             </div>
 
 
-                            <ReactMde
+                            <ReactQuill
                                 value={value}
                                 onChange={setValue}
-                                selectedTab={selectedTab}
-                                onTabChange={setSelectedTab}
-                                generateMarkdownPreview={(markdown) =>
-                                    Promise.resolve(converter.makeHtml(markdown))}
+                                modules={{
+                                    toolbar: [
+                                        [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+                                        [{ size: [] }],
+                                        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                                        [{ 'list': 'ordered' }, { 'list': 'bullet' },
+                                        { 'indent': '-1' }, { 'indent': '+1' }],
+                                        ['link', 'image', 'video'],
+                                        ['clean']
+                                    ],
+                                    clipboard: {
+                                        matchVisual: false,
+                                    }
+                                }}
+                                formats={[
+                                    'header', 'font', 'size',
+                                    'bold', 'italic', 'underline', 'strike', 'blockquote',
+                                    'list', 'bullet', 'indent',
+                                    'link', 'image', 'video'
+                                ]}
                             />
                             <button className='mt-3 px-4 py-1 rounded-sm bg-blue-400 ml-3 mb-2' onClick={handleAddBlog}>Add Blog</button>
                         </div>

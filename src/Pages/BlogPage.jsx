@@ -1,22 +1,15 @@
 import { onValue, ref, set } from 'firebase/database'
 import React, { Fragment, useEffect, useState } from 'react'
 import { database } from '../utils/firebaseConfig'
-import ReactMde from 'react-mde'
-import * as Showdown from "showdown";
-import "react-mde/lib/styles/css/react-mde-all.css";
-import { v4 as uuidv4 } from 'uuid';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { RiArrowDownSLine, RiArrowRightSLine } from '@remixicon/react'
 import NewBlogEdit from '../utils/NewBlogEdit';
 
 const BlogPage = () => {
     const [blogs, setBlogs] = useState([])
-    const [selectedTab, setSelectedTab] = useState("write");
     const [showSection, setShowSection] = useState(false)
     const [showBlogEdit, setShowBlogEdit] = useState(false)
-
-    const converter = new Showdown.Converter({
-        strikethrough: true,
-    })
 
 
     // Retrieving data from the database
@@ -99,14 +92,29 @@ const BlogPage = () => {
                                                 <>
                                                     <div onClick={() => setShowBlogEdit(false)} className='fixed z-30 bg-black h-full w-full left-0 top-0 opacity-40'></div>
                                                     <div className='w-full h-full overflow-y-scroll remove-scroll bg-white absolute p-3 z-50 top-0 left-0 translate-x-10 translate-y-5'>
-                                                        <ReactMde
+                                                        <ReactQuill
                                                             value={blog[key] || ''}
-                                                            onChange={(e) => updateContent(e, blog.id)
-                                                            }
-                                                            selectedTab={selectedTab}
-                                                            onTabChange={setSelectedTab}
-                                                            generateMarkdownPreview={(markdown) =>
-                                                                Promise.resolve(converter.makeHtml(markdown))}
+                                                            onChange={(e) => updateContent(e, blog.id)}
+                                                            modules={{
+                                                                toolbar: [
+                                                                    [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+                                                                    [{ size: [] }],
+                                                                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                                                                    [{ 'list': 'ordered' }, { 'list': 'bullet' },
+                                                                    { 'indent': '-1' }, { 'indent': '+1' }],
+                                                                    ['link', 'image', 'video'],
+                                                                    ['clean']
+                                                                ],
+                                                                clipboard: {
+                                                                    matchVisual: false,
+                                                                }
+                                                            }}
+                                                            formats={[
+                                                                'header', 'font', 'size',
+                                                                'bold', 'italic', 'underline', 'strike', 'blockquote',
+                                                                'list', 'bullet', 'indent',
+                                                                'link', 'image', 'video'
+                                                            ]}
                                                         />
                                                     </div>
                                                 </>
