@@ -10,6 +10,7 @@ const BlogPage = () => {
     const [blogs, setBlogs] = useState([])
     const [showSection, setShowSection] = useState(false)
     const [showBlogEdit, setShowBlogEdit] = useState(false)
+    const [blogId, setBlogId] = useState('')
 
 
     // Retrieving data from the database
@@ -22,6 +23,8 @@ const BlogPage = () => {
     }, [])
 
     const updateContent = (value, id) => {
+        console.log(id);
+        
         setBlogs(prev =>
             prev.map(blog =>
                 blog.id === id ? { ...blog, content: value } : blog
@@ -80,18 +83,17 @@ const BlogPage = () => {
                                                     type="text"
                                                     id={key}
                                                     value={blog[key] || ''} />
-                                                {key.startsWith('image') && (
+                                                {key.startsWith('Image') && (
                                                     <img className='w-44' src={blog[key]} alt="" />
                                                 )}
                                             </div>
                                         </div>
                                     ) : (
                                         <>
-                                            <button className='mt-4 px-4 py-1 rounded-md bg-green-400 mb-3' onClick={() => setShowBlogEdit(true)}>Change Content</button>
-                                            {showBlogEdit && (
-                                                <>
-                                                    <div onClick={() => setShowBlogEdit(false)} className='fixed z-30 bg-black h-full w-full left-0 top-0 opacity-40'></div>
-                                                    <div className='w-full h-full overflow-y-scroll remove-scroll bg-white absolute p-3 z-50 top-0 left-0 translate-x-10 translate-y-5'>
+                                            <button className='mt-4 px-4 py-1 rounded-md bg-green-400 mb-3' onClick={() => {setShowBlogEdit(true); setBlogId(blog.id)}}>Change Content</button>
+
+                                                    <div onClick={() => setShowBlogEdit(false)} className={`fixed z-30 bg-black h-full w-full left-0 top-0 opacity-40 ${showBlogEdit ? '' : 'hidden'}`}></div>
+                                                    <div className={`w-full h-full overflow-y-scroll remove-scroll bg-white absolute p-3 z-50 top-0 left-0 translate-x-10 translate-y-5 ${showBlogEdit && blogId === blog.id ? '' : 'hidden'}`}>
                                                         <ReactQuill
                                                             value={blog[key] || ''}
                                                             onChange={(e) => updateContent(e, blog.id)}
@@ -117,8 +119,8 @@ const BlogPage = () => {
                                                             ]}
                                                         />
                                                     </div>
-                                                </>
-                                            )}
+                                                
+                        
                                         </>
                                     )
                                 ))}
