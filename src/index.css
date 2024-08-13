@@ -8,3 +8,7 @@ html, body{
     width: 100%;
     font-family: 'Montserrat', 'sans-serif';
 }
+
+.ql-container{
+    height: 470px;
+}
