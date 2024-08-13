@@ -9,7 +9,7 @@ const Sidebar = () => {
   const userlogout = () => {
     signOut(auth)
     localStorage.removeItem('token')
-    navigate('/login')
+    navigate('/')
   }
 
   const {setPage} = useFirebaseContext()
